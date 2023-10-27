@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
+from .models import CustomUser, Roles
 from django import forms
 
 
@@ -58,5 +58,19 @@ class CustomUserCreationForm(UserCreationForm):
             self.fields['bank_account'].widget.attrs.update({'class': 'input-group-text'})
                                                             
 
-                            
+class RoleForm(forms.ModelForm):
+    class Meta:
+        model = Roles
+        fields = (
+            'name',
+            'description',
+        )
+        widgets = {
+            'name': forms.TextInput(attrs={"class": "input-group-text"}),
+            'description': forms.TextInput(attrs={"class": "input-group-text"}),
+        }
+        def __init__(self) -> None:
+            super(RoleForm, self).__init__(*args, **kwargs)
+            self.fields['name'].widget.attrs.update({'class': 'input-group-text'})
+            self.fields['description'].widget.attrs.update({'class': 'input-group-text'})
                                 

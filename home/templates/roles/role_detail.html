@@ -1,0 +1,17 @@
+{% extends 'base.html' %} {% block content %}
+
+<form method="post">
+  {% csrf_token %} {% if form.errors %}
+  <p style="color: red">
+    Please correct the error{{ form.errors|pluralize }} below.
+  </p>
+  {% endif %}
+
+  <p>role: {{ role.name }}</p>
+  <p>description: {{ role.description }}</p>
+
+  {{ form.as_p}}
+  <input type="submit" class="btn btn-secondary" />
+</form>
+
+{% endblock %}

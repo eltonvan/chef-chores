@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-from .models import CustomUser
-from .forms import CustomUserCreationForm
+from .models import CustomUser, Roles
+from .forms import CustomUserCreationForm, RoleForm
 
 
 class UserTests(TestCase):
@@ -49,3 +49,21 @@ class UserTests(TestCase):
         #self.assertContains(response, "testuser1")
         self.assertTemplateUsed(response, "home/welcome.html")
 
+class RolesTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        name  = "Test Role"
+        description = "Test Description"
+        role = Roles.objects.create(name=name, description=description)
+
+    def test_roles_content(self):
+        role = Roles.objects.get(id=1)
+        expected_object_name = f"{role.name}"
+        self.assertEquals(expected_object_name, "Test Role")
+        self.assertEquals(role.description, "Test Description")
+
+    def test_roles_list_view(self):
+        response = self.client.get(reverse("roles"))
+        self.assertEqual(response.status_code, 302)
+        self.assertContains(response, "Test Role")
+        self.assertTemplateUsed(response, "roles/role_list.html")

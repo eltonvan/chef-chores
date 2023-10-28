@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from .models import CustomUser, Roles
+from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm, RoleForm
 
 
@@ -63,7 +64,17 @@ class RolesTests(TestCase):
         self.assertEquals(role.description, "Test Description")
 
     def test_roles_list_view(self):
+        # Create a test user and log them in
+        test_user = get_user_model().objects.create_user(
+            username="testuser",
+            password="testpassword"
+        )
+        self.client.login(username="testuser", password="testpassword")
+
+    
         response = self.client.get(reverse("roles"))
-        self.assertEqual(response.status_code, 302)
+
+        
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Role")
         self.assertTemplateUsed(response, "roles/role_list.html")

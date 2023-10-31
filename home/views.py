@@ -1,5 +1,7 @@
+from typing import Any
+from django.db import models
 from .models import CustomUser, Roles
-from .forms import CustomUserCreationForm, RoleForm
+from .forms import CustomUserCreationForm, RoleForm, CustomUserUpdateForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
@@ -8,6 +10,8 @@ from django.views.generic import CreateView, TemplateView, UpdateView, ListView,
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
+from .mixin import CustomLoginRequiredMixin, CustomAuthorizationMixin, AdminRequiredMixin
 
 
 
@@ -53,30 +57,24 @@ class AuthorizedView(LoginRequiredMixin, TemplateView):
     login_url = '/login'
 
 
-class UpdateView(LoginRequiredMixin, UpdateView):
+class UserUpdateView(CustomAuthorizationMixin, UpdateView):
     model = CustomUser
+    form_class = CustomUserUpdateForm
     template_name = 'home/register.html'
-    success_url = 'home'
-    form_class = CustomUserCreationForm
+    login_url = '/login'
     
-    success_message = "User updated successfully."
+    success_url = reverse_lazy('home')
 
+    def get_object(self, queryset=None):
+        return self.request.user 
+    
+class UserListView(AdminRequiredMixin,LoginRequiredMixin, ListView):
+    template_name = 'home/user_list.html'
+    login_url = '/login'
+    model = CustomUser
+    context_object_name = 'users'
 
-
-    def get(self, request, *args, **kwargs):
-        print("user", type(request.user))
-
-        pk = self.request.user.pk
-        self.object = self.model.objects.get(pk=pk)
-        form = CustomUserCreationForm(instance=self.object)
-        return render(request, 'home/register.html', {"form": form})
-
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user 
-        form.save()
-        return HttpResponseRedirect(self.get_success_url())
-
+    
 
 
 class RoleListView(LoginRequiredMixin, ListView):
@@ -84,6 +82,16 @@ class RoleListView(LoginRequiredMixin, ListView):
     login_url = '/login'
     model = Roles
     context_object_name = 'roles'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Roles.objects.filter(users=user.id)
+        print("Roles for user:", queryset)
+        #queryset = user.roles.all()
+
+
+        return queryset
 
 
 class RoleDetailView(LoginRequiredMixin, DetailView):

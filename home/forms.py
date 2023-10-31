@@ -22,6 +22,7 @@ class CustomUserCreationForm(UserCreationForm):
             'country',
             'phone_number',
             'bank_account',
+            'roles',
         )
 
         widgets = {
@@ -37,6 +38,7 @@ class CustomUserCreationForm(UserCreationForm):
             'country': forms.TextInput(attrs={"class": "input-group-text"}),
             'phone_number': forms.TextInput(attrs={"class": "input-group-text"}),
             'bank_account': forms.TextInput(attrs={"class": "input-group-text"}),
+            'roles': forms.SelectMultiple(attrs={"class": "input-group-text"}),
         }
 
         def __init__(self) -> None:
@@ -56,7 +58,42 @@ class CustomUserCreationForm(UserCreationForm):
             self.fields['country'].widget.attrs.update({'class': 'input-group-text'})
             self.fields['phone_number'].widget.attrs.update({'class': 'input-group-text'})
             self.fields['bank_account'].widget.attrs.update({'class': 'input-group-text'})
+            self.fields['roles'].widget.attrs.update({'class': 'input-group-text'})
                                                             
+class CustomUserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'company',
+            'birthday',
+            'street',
+            'house_number',
+            'city',
+            'zip_code',
+            'country',
+            'phone_number',
+            'bank_account',
+            'roles',
+        )
+
+        widgets = {
+            'email': forms.EmailInput(attrs={"class": "input-group-text"}),
+            'first_name': forms.TextInput(attrs={"class": "input-group-text"}),
+            'last_name': forms.TextInput(attrs={"class": "input-group-text"}),
+            'company': forms.TextInput(attrs={"class": "input-group-text"}),
+            'birthday': forms.DateInput(attrs={"class": "input-group-text"}),
+            'street': forms.TextInput(attrs={"class": "input-group-text"}),
+            'house_number': forms.TextInput(attrs={"class": "input-group-text"}),
+            'city': forms.TextInput(attrs={"class": "input-group-text"}),
+            'zip_code': forms.TextInput(attrs={"class": "input-group-text"}),
+            'country': forms.TextInput(attrs={"class": "input-group-text"}),
+            'phone_number': forms.TextInput(attrs={"class": "input-group-text"}),
+            'bank_account': forms.TextInput(attrs={"class": "input-group-text"}),
+            'roles': forms.SelectMultiple(attrs={"class": "input-group-text"}),
+        }
 
 class RoleForm(forms.ModelForm):
     class Meta:

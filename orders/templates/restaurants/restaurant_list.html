@@ -1,0 +1,32 @@
+{% extends 'base.html' %} {% block content %}
+<h1>roles</h1>
+<table border="1">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>name</th>
+      <th>Address</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Website</th>
+      <th>Owner</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for restaurant in restaurants %}
+    <tr>
+      <td>{{ restaurant.id }}</td>
+      <td>{{ restaurant.name }}</td>
+      <td>
+        {{ restaurant.street }} {{ restaurant.house_nmber }} {{ restaurant.city
+        }}
+      </td>
+      <td>{{ restaurant.email }}</td>
+      <td>{{ restaurant.phone }}</td>
+      <td>{{ restaurant.website }}</td>
+      <td>{{ restaurant.owner }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

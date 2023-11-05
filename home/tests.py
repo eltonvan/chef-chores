@@ -9,25 +9,31 @@ class UserTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         testuser1 = CustomUser.objects.create_user(
-            username="testuser1", password="abc123", 
+            is_superuser=True,
+            username="testuser1",
+            password="abc123",
             email="user1@testsite.com",
-            first_name="Test", last_name="User",
+            first_name="Test",
+            last_name="User",
             phone_number="1234567890",
             city="Test City",
             zip_code="12345",
             country="Test Country",
-            is_staff=True, )
+            is_staff=True,
+        )
         testuser1.save()
 
         testuser2 = CustomUser.objects.create_user(
-            username="testuser2", password="abc123",
+            username="testuser2",
+            password="abc123",
             email="user2@testsite.com",
-            first_name="Test", last_name="User",
-            phone_number="1234567890", 
-            city="Test City",   
+            first_name="Test",
+            last_name="User",
+            phone_number="1234567890",
+            city="Test City",
             zip_code="12345",
             country="Test Country",
-            is_staff=True, 
+            is_staff=True,
         )
         testuser2.save()
 
@@ -45,15 +51,17 @@ class UserTests(TestCase):
         self.assertEquals(user.is_staff, True)
 
     def test_users_list_view(self):
-        response = self.client.get(reverse("home"))
+        self.client.login(username="testuser1", password="abc123")
+        response = self.client.get(reverse("user_list"))
         self.assertEqual(response.status_code, 200)
-        #self.assertContains(response, "testuser1")
-        self.assertTemplateUsed(response, "home/welcome.html")
+        self.assertContains(response, "testuser1")
+        self.assertTemplateUsed(response, "home/user_list.html")
+
 
 class RolesTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        name  = "Test Role"
+        name = "Test Role"
         description = "Test Description"
         role = Roles.objects.create(name=name, description=description)
 
@@ -67,13 +75,11 @@ class RolesTests(TestCase):
     def test_roles_list_view(self):
         # Create a test user and log them in
         test_user = get_user_model().objects.create_user(
-            username="testuser",
-            password="testpassword"
+            username="testuser", password="testpassword"
         )
         self.client.login(username="testuser", password="testpassword")
         test_user.roles.add(Roles.objects.get(name="Test Role"))
 
-    
         response = self.client.get(reverse("roles"))
         print("response", response)
         # Check that the response is 200 OK.
@@ -84,74 +90,81 @@ class RolesTests(TestCase):
         self.assertTemplateUsed(response, "roles/role_list.html")
 
 
-
 class UserRoleTests(TestCase):
     def setUp(self):
-        
         role1 = Roles.objects.create(name="Role 1")
         role2 = Roles.objects.create(name="Role 2")
 
         # Create test users with unique email addresses
-        self.user1 = CustomUser.objects.create_user(username="user1", password="password1", email="user1@example.com")
-        self.user2 = CustomUser.objects.create_user(username="user2", password="password2", email="user2@example.com")
-
-    def test_associate_roles_with_user(self):
+        self.user1 = CustomUser.objects.create_user(
+            username="user1", password="password1", email="user1@example.com"
+        )
+        self.user2 = CustomUser.objects.create_user(
+            username="user2", password="password2", email="user2@example.com"
+        )
         # Add roles to the users
         self.user1.roles.add(Roles.objects.get(name="Role 1"))
         self.user2.roles.add(Roles.objects.get(name="Role 2"))
 
+    def test_associate_roles_with_user(self):
         # Check that the users have the correct roles
         self.assertEqual(self.user1.roles.count(), 1)
         self.assertEqual(self.user2.roles.count(), 1)
 
-    # def test_retrieve_users_by_role(self):
-    #     # Query users with Role 1
-    #     users_with_role1 = CustomUser.objects.filter(roles__name="Role 1")
-    #     self.assertEqual(users_with_role1.count(), 1)
-    #     self.assertEqual(users_with_role1[0], self.user1)
+    # broken!
+    def test_retrieve_users_by_role(self):
+        # Query users with Role 1
+        print("roles", Roles.objects.all())
+        users_with_role1 = Roles.objects.filter(name="Role 1")
+        self.assertEqual(users_with_role1.count(), 1)
+        print("users_with_role1", self.user1.roles.all())
+        self.assertEqual(users_with_role1[0], self.user1.roles.last())
 
-    #     # Query users with Role 2
-    #     users_with_role2 = CustomUser.objects.filter(roles__name="Role 2")
-    #     self.assertEqual(users_with_role2.count(), 1)
-    #     self.assertEqual(users_with_role2[0], self.user2)
+        # Query users with Role 2
+        users_with_role2 = Roles.objects.filter(name="Role 2")
+        self.assertEqual(users_with_role2.count(), 1)
+        self.assertEqual(users_with_role2[0], self.user2.roles.last())
+
 
 class RoleListViewTest(TestCase):
     def setUp(self):
         # Create a test user
         self.user = CustomUser.objects.create_user(
-            username='testuser',
-            password='testpassword'
+            username="testuser", password="testpassword"
         )
 
         # Create some roles associated with the user
-        self.role1 = Roles.objects.create(name='Role 1')
-        self.role2 = Roles.objects.create(name='Role 2')
-        self.role3 = Roles.objects.create(name='Role 3')
+        self.role1 = Roles.objects.create(name="Role 1")
+        self.role2 = Roles.objects.create(name="Role 2")
+        self.role3 = Roles.objects.create(name="Role 3")
         self.user.roles.add(self.role1, self.role2)
 
     def test_role_list_view_authenticated_user(self):
         # Log in the user
-        self.client.login(username='testuser', password='testpassword')
+        self.client.login(username="testuser", password="testpassword")
 
         # Access the RoleListView
-        response = self.client.get(reverse('roles'))
+        response = self.client.get(reverse("roles"))
 
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
 
         # Check if the user's associated roles are displayed in the template
-        self.assertContains(response, 'Role 1')
-        self.assertContains(response, 'Role 2')
+        self.assertContains(response, "Role 1")
+        self.assertContains(response, "Role 2")
 
         # Check if roles not associated with the user are not displayed
-        self.assertNotContains(response, 'Role 3')
+        self.assertNotContains(response, "Role 3")
 
     def test_role_list_view_unauthenticated_user(self):
         # Access the RoleListView without logging in
-        response = self.client.get(reverse('roles'))
+        response = self.client.get(reverse("roles"))
 
         # Check if the response status code is 302 (redirect to login)
         self.assertEqual(response.status_code, 302)
 
         # Check if the user is redirected to the login page
-        self.assertRedirects(response, '/login?next=/roles')
+        self.assertRedirects(response, "/login?next=/roles")
+
+
+

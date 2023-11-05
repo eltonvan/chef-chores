@@ -10,7 +10,7 @@ class CustomLoginRequiredMixin(LoginRequiredMixin):
         '''  checks for object-level access control and 
         returns a 404 response if the current user does 
         not match the object's owner'''
-        print("request.user.id", request.customuser.id)
+        #print("request.user.id", request.customuser.id)
         print("self.get_object().user.id", self.get_object().user.id)
         if self.get_object().user.id != request.user.id:
             template_name = 'home'

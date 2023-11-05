@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework', # new
     'home.apps.HomeConfig', # new
+    'orders.apps.OrdersConfig', # new
 ]
 
 MIDDLEWARE = [

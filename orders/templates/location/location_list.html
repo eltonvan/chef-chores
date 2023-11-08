@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block content %}
-<h1>roles</h1>
+<h1>locations</h1>
 <table border="1">
   <thead>
     <tr>
@@ -13,13 +13,12 @@
     </tr>
   </thead>
   <tbody>
-    {% for loacation in restaurants %}
+    {% for loacation in locations %}
     <tr>
       <td>{{ location.id }}</td>
       <td>{{ location.name }}</td>
       <td>
-        {{ location.street }} {{ location.house_number }} {{ location.city
-        }}
+        {{ location.street }} {{ location.house_number }} {{ location.city }}
       </td>
       <td>{{ location.email }}</td>
       <td>{{ location.phone_number }}</td>

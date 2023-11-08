@@ -81,7 +81,6 @@ class RolesTests(TestCase):
         test_user.roles.add(Roles.objects.get(name="Test Role"))
 
         response = self.client.get(reverse("roles"))
-        print("response", response)
         # Check that the response is 200 OK.
         self.assertEqual(response.status_code, 200)
         # Check that the rendered context contains 1 role.
@@ -114,10 +113,8 @@ class UserRoleTests(TestCase):
     # broken!
     def test_retrieve_users_by_role(self):
         # Query users with Role 1
-        print("roles", Roles.objects.all())
         users_with_role1 = Roles.objects.filter(name="Role 1")
         self.assertEqual(users_with_role1.count(), 1)
-        print("users_with_role1", self.user1.roles.all())
         self.assertEqual(users_with_role1[0], self.user1.roles.last())
 
         # Query users with Role 2
@@ -165,6 +162,3 @@ class RoleListViewTest(TestCase):
 
         # Check if the user is redirected to the login page
         self.assertRedirects(response, "/login?next=/roles")
-
-
-

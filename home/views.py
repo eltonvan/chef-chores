@@ -87,10 +87,6 @@ class RoleListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         queryset = Roles.objects.filter(users=user.id)
-        print("Roles for user:", queryset)
-        #queryset = user.roles.all()
-
-
         return queryset
 
 
